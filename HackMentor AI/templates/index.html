@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HackMentor AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Load marked.js for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <div class="logo">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            HackMentor AI
+        </div>
+        <ul class="nav-links">
+            <li class="nav-item active" data-target="ideation">1. Idea Generator</li>
+            <li class="nav-item" data-target="scoring">2. Idea Scorer</li>
+            <li class="nav-item" data-target="solution">3. Solution Builder</li>
+            <li class="nav-item" data-target="pitch">4. Pitch Generator</li>
+        </ul>
+    </nav>
+
+    <main>
+        <!-- Loading Overlay -->
+        <div id="loadingOverlay" class="loading">
+            <div class="spinner"></div>
+            <p style="color: var(--text-muted); margin-top: 1rem;">Synthesizing data through AI models...</p>
+        </div>
+
+        <!-- Section 1: Ideation -->
+        <section id="ideation" class="section">
+            <div class="glass-panel">
+                <h1>AI Idea Generator</h1>
+                <p class="subtitle">Enter your constraints and get high-potential hackathon ideas.</p>
+                
+                <form id="ideaForm">
+                    <div class="form-group">
+                        <label>Domain / Theme</label>
+                        <input type="text" id="domain" placeholder="e.g. Healthcare, EdTech, Web3" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Problem Area (Optional)</label>
+                        <input type="text" id="problem" placeholder="e.g. Lack of focus while studying">
+                    </div>
+                    <div class="form-group">
+                        <label>Team Technical Level</label>
+                        <select id="techLevel">
+                            <option value="Beginner">Beginner (HTML/CSS/Basic JS)</option>
+                            <option value="Intermediate">Intermediate (React/Node/APIs)</option>
+                            <option value="Advanced">Advanced (ML/Web3/Complex Systems)</option>
+                            <option value="Non-technical">Non-technical (No-code/Business)</option>
+                        </select>
+                    </div>
+                    <button type="submit">Generate Ideas</button>
+                </form>
+
+                <div id="ideasResult" class="hidden" style="margin-top: 2rem;">
+                    <h2>Generated Ideas</h2>
+                    <div id="ideasContainer"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Hybrid Scoring -->
+        <section id="scoring" class="section hidden">
+            <div class="glass-panel">
+                <h1>Hybrid Evaluation Engine</h1>
+                <p class="subtitle">AI qualitative analysis combined with deterministic hackathon rules.</p>
+                
+                <form id="scoreForm">
+                    <div class="form-group">
+                        <label>Your Idea</label>
+                        <textarea id="ideaToScore" rows="4" placeholder="Describe your hackathon idea..." required></textarea>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                         <div class="form-group" style="margin-bottom:0">
+                            <label>Domain</label>
+                            <input type="text" id="scoreDomain" placeholder="e.g. Health">
+                        </div>
+                        <div class="form-group" style="margin-bottom:0">
+                            <label>Team Size</label>
+                            <input type="number" id="teamSize" value="4" min="1" max="10">
+                        </div>
+                        <div class="form-group" style="margin-bottom:0">
+                            <label>Timeline (Hours)</label>
+                            <input type="number" id="timeline" value="48">
+                        </div>
+                    </div>
+                    <button type="submit">Evaluate Idea</button>
+                </form>
+
+                <div id="scoreResult" class="hidden" style="margin-top: 2rem;">
+                    <div class="verdict-box" id="verdictBox">
+                        <div class="verdict-title" id="verdictText"></div>
+                        <p style="color: var(--text-muted); margin-top: 0.5rem;">Total Score: <span id="totalScoreText" style="color:white; font-weight:bold;"></span>/10</p>
+                    </div>
+
+                    <div class="score-grid">
+                        <div class="score-card">
+                            <div class="score-label">Innovation</div>
+                            <div class="score-value" id="scoreInnovation">0</div>
+                            <p id="reasonInnovation" style="font-size:0.8rem; color:var(--text-muted)"></p>
+                        </div>
+                        <div class="score-card">
+                            <div class="score-label">Feasibility</div>
+                            <div class="score-value" id="scoreFeasibility">0</div>
+                            <p id="reasonFeasibility" style="font-size:0.8rem; color:var(--text-muted)"></p>
+                        </div>
+                        <div class="score-card">
+                            <div class="score-label">Impact</div>
+                            <div class="score-value" id="scoreImpact">0</div>
+                            <p id="reasonImpact" style="font-size:0.8rem; color:var(--text-muted)"></p>
+                        </div>
+                    </div>
+
+                    <div class="adjustments-list hidden" id="adjustmentsContainer">
+                        <h3 style="margin-bottom: 1rem;">Rule-based Adjustments Applied:</h3>
+                        <div id="adjustmentsList"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Solution Builder -->
+        <section id="solution" class="section hidden">
+            <div class="glass-panel">
+                <h1>Architecture & Roadmap</h1>
+                <p class="subtitle">Turn your idea into an actionable build plan.</p>
+                
+                <form id="solutionForm">
+                    <div class="form-group">
+                        <label>Selected Idea / Pitch</label>
+                        <textarea id="ideaToBuild" rows="4" placeholder="Paste the winning idea here..." required></textarea>
+                    </div>
+                    <button type="submit">Generate Architecture</button>
+                </form>
+
+                <div id="solutionResult" class="hidden markdown-body" style="margin-top: 2rem; background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--glass-border);">
+                    <!-- Rendered via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Pitch Generator -->
+        <section id="pitch" class="section hidden">
+            <div class="glass-panel">
+                <h1>60-Second Elevator Pitch</h1>
+                <p class="subtitle">A structured script to nail your presentation.</p>
+                
+                <form id="pitchForm">
+                    <div class="form-group">
+                        <label>Finalized Idea + Tech Stack</label>
+                        <textarea id="ideaToPitch" rows="4" placeholder="Briefly describe what you built..." required></textarea>
+                    </div>
+                    <button type="submit">Generate Pitch Script</button>
+                </form>
+
+                <div id="pitchResult" class="hidden markdown-body" style="margin-top: 2rem; background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--glass-border);">
+                    <!-- Rendered via JS -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
